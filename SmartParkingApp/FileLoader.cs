@@ -32,5 +32,10 @@ namespace SmartParkingApp
             
             return obj;
         }
+
+        public static bool HasSave()
+        {
+            return File.Exists(FileLoader.FileName);
+        }
     }
 }

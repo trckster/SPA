@@ -6,7 +6,11 @@ namespace ParkingApp
     {
         static void Main(string[] args)
         {
-            ParkingManager app = new ParkingManager();
+            if (FileLoader.HasSave())
+            {
+                Console.ReadLine("kek");
+            }
+            ParkingManager app = new ParkingMaclassnager();
 
             /** Scenario 1 */
             Console.WriteLine("Scenario 1");
