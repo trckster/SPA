@@ -75,8 +75,6 @@ namespace ParkingApp
             this.ActiveParkingSessions.Remove(session);
             this.CompletedParkingSessions.Add(session);
 
-            Console.WriteLine(session.ExitDt);
-            
             return true;
         }        
 
