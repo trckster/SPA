@@ -22,20 +22,13 @@ namespace ParkingApp
             this.Tariff = new List<Tariff>();
 
             this.SetTariffData();
-
-            foreach (var t in this.Tariff)
-            {
-                Console.WriteLine(t.Minutes);
-            }
             
-            this.FreeLeavePeriod = 15;
+            this.FreeLeavePeriod = this.Tariff.First().Minutes;
         }
 
         /* BASIC PART */
         public ParkingSession EnterParking(string carPlateNumber)
         {
-            Console.WriteLine("entering");
-
             if (ParkingManager.ParkingCapacity <= this.ActiveParkingSessions.Count)
                 return null;
 
@@ -58,39 +51,61 @@ namespace ParkingApp
 
         public bool TryLeaveParkingWithTicket(int ticketNumber, out ParkingSession session)
         {
+            session = this.ActiveParkingSessions.Find(s => s.TicketNumber == ticketNumber);
+
+            if (session == null)
+                return false;
+
+            DateTime startTimer;
+
+            if (session.PaymentDt == null)
+                startTimer = session.EntryDt;
+            else
+                startTimer = (DateTime) session.PaymentDt;
+
+            if (startTimer.AddMinutes(this.FreeLeavePeriod).CompareTo(DateTime.Now) < 0)
+            {
+                session = null;
+                
+                return false;
+            }
+
+            session.ExitDt = DateTime.Now;
             
-            /*
-             * Check that the car leaves parking within the free leave period
-             * from the PaymentDt (or if there was no payment made, from the EntryDt)
-             * 1. If yes:
-             *   1.1 Complete the parking session by setting the ExitDt property
-             *   1.2 Move the session from the list of active sessions to the list of past sessions
-             *   1.3 return true and the completed parking session object in the out parameter
-             * 
-             * 2. Otherwise, return false, session = null
-             */
-            throw new NotImplementedException();
+            this.ActiveParkingSessions.Remove(session);
+            this.CompletedParkingSessions.Add(session);
+
+            Console.WriteLine(session.ExitDt);
+            
+            return true;
         }        
 
         public decimal GetRemainingCost(int ticketNumber)
         {
-            /* Return the amount to be paid for the parking
-             * If a payment had already been made but additional charge was then given
-             * because of a late exit, this method should return the amount 
-             * that is yet to be paid (not the total charge)
-             */
-            throw new NotImplementedException();
+            ParkingSession session = this.ActiveParkingSessions.Find(s => s.TicketNumber == ticketNumber);
+
+            DateTime startTimerDt;
+
+            if (session.PaymentDt != null)
+                startTimerDt = (DateTime) session.PaymentDt;
+            else
+                startTimerDt = session.EntryDt;
+
+            double spentTime = DateTime.Now.Subtract(startTimerDt).TotalMinutes;
+
+            return this.GetPriceByMinutes(spentTime);
         }
 
         public void PayForParking(int ticketNumber, decimal amount)
         {
-            /*
-             * Save the payment details in the corresponding parking session
-             * Set PaymentDt to current date and time
-             * 
-             * For simplicity we won't make any additional validation here and always
-             * assume that the parking charge is paid in full
-             */
+            ParkingSession session = this.ActiveParkingSessions.Find(s => s.TicketNumber == ticketNumber);
+            
+            session.PaymentDt = DateTime.Now;
+
+            if (session.TotalPayment == null)
+                session.TotalPayment = 0;
+
+            session.TotalPayment += amount;
         }
 
         /* ADDITIONAL TASK 2 */
@@ -144,6 +159,27 @@ namespace ParkingApp
             this.Tariff.Add(new Tariff(300, 800));
             this.Tariff.Add(new Tariff(450, 1600));
             this.Tariff.Add(new Tariff(600, 3200));
+        }
+
+        private decimal GetPriceByMinutes(double minutes)
+        {
+            Tariff result = null;
+
+            foreach (var tariff in this.Tariff)
+            {
+                if (minutes <= tariff.Minutes)
+                    if (result == null || tariff.Minutes < result.Minutes)
+                        result = tariff;
+            }
+
+            if (result == null)
+            {
+                int maxMinutes = this.Tariff.Max(t => t.Minutes);
+                
+                result = this.Tariff.Find(t => t.Minutes == maxMinutes);
+            }
+
+            return result.Rate;
         }
     }
 }

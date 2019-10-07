@@ -8,18 +8,13 @@ namespace ParkingApp
         {
             ParkingManager app = new ParkingManager();
 
-            if (app.EnterParking("kekheh") == null)
-                Console.WriteLine("fcuk");
-            else
-                Console.WriteLine("oh god");
-            if (app.EnterParking("newkekheh") == null)
-                Console.WriteLine("fcuk");
-            else
-                Console.WriteLine("oh god");
-            if (app.EnterParking("kekheh") == null)
-                Console.WriteLine("fcuk");
-            else
-                Console.WriteLine("oh god");
+            ParkingSession ps = app.EnterParking("Simple car");
+            ps.EntryDt = ps.EntryDt.AddMinutes(-439);
+            Console.WriteLine("Payment: {0}", app.GetRemainingCost(ps.TicketNumber));
+            app.PayForParking(ps.TicketNumber, 10);
+            ParkingSession ps2;
+            Console.WriteLine("Hello blyab {0}", ps.TotalPayment);
+            Console.WriteLine("Wanna go {0}", app.TryLeaveParkingWithTicket(ps.TicketNumber, out ps2));
         }
     }
 }
