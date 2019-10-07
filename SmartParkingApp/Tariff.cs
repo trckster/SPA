@@ -1,5 +1,8 @@
-﻿namespace SmartParkingApp
+﻿using System;
+
+namespace SmartParkingApp
 {
+    [Serializable]
     class Tariff
     {
         public int Minutes { get; set; }

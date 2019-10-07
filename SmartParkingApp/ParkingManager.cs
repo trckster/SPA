@@ -5,13 +5,16 @@ using SmartParkingApp;
 
 namespace ParkingApp
 {
+    [Serializable]
     class ParkingManager
     {
+        private const int ParkingCapacity = 450;
+
         private List<ParkingSession> ActiveParkingSessions;
         private List<ParkingSession> CompletedParkingSessions;
         private List<Tariff> Tariff;
 
-        private const int ParkingCapacity = 450;
+        private FileLoader fl;
         private int FreeLeavePeriod;
         
 
@@ -24,9 +27,9 @@ namespace ParkingApp
             this.SetTariffData();
             
             this.FreeLeavePeriod = this.Tariff.First().Minutes;
+            this.fl = new FileLoader();
         }
-
-        /* BASIC PART */
+        
         public ParkingSession EnterParking(string carPlateNumber)
         {
             if (ParkingManager.ParkingCapacity <= this.ActiveParkingSessions.Count)
@@ -42,13 +45,14 @@ namespace ParkingApp
 
             this.ActiveParkingSessions.Add(newSession);
 
+            this.Save();
+
             return newSession;
                  /**
                  * Advanced task:
                  * Link the new parking session to an existing user by car plate number (if such user exists)            
                  */
         }
-
         public bool TryLeaveParkingWithTicket(int ticketNumber, out ParkingSession session)
         {
             session = this.ActiveParkingSessions.Find(s => s.TicketNumber == ticketNumber);
@@ -75,6 +79,8 @@ namespace ParkingApp
             this.ActiveParkingSessions.Remove(session);
             this.CompletedParkingSessions.Add(session);
 
+            this.Save();
+
             return true;
         }        
 
@@ -90,7 +96,7 @@ namespace ParkingApp
                 startTimerDt = session.EntryDt;
 
             double spentTime = DateTime.Now.Subtract(startTimerDt).TotalMinutes;
-
+            
             return this.GetPriceByMinutes(spentTime);
         }
 
@@ -104,6 +110,8 @@ namespace ParkingApp
                 session.TotalPayment = 0;
 
             session.TotalPayment += amount;
+
+            this.Save();
         }
 
         /* ADDITIONAL TASK 2 */
@@ -178,6 +186,11 @@ namespace ParkingApp
             }
 
             return result.Rate;
+        }
+
+        private void Save()
+        {
+            this.fl.SaveObject(this);
         }
     }
 }

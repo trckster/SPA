@@ -2,6 +2,7 @@
 
 namespace ParkingApp
 {
+    [Serializable]
     class ParkingSession
     {
         // Date and time of arriving at the parking
