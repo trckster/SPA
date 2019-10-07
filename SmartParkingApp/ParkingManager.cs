@@ -4,9 +4,17 @@ namespace ParkingApp
 {
     class ParkingManager
     {
+        private List ActiveParkingSessions = new List<ParkingSession>;
+        private List CompletedParkingSessions = new List<ParkingSession>;
+        private List Tariff = new List<Tariff>;
+
+        private const int ParkingCapacity = 450;
+        private int FreeLeavePeriod = 15;
+
         /* BASIC PART */
         public ParkingSession EnterParking(string carPlateNumber)
         {
+            if (this-)
             /* Check that there is a free parking place (by comparing the parking capacity 
              * with the number of active parking sessions). If there are no free places, return null
              * 

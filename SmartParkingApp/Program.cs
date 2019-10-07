@@ -6,7 +6,8 @@ namespace ParkingApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Smart parking application");
+            ParkingManager app = new ParkingManager();
+            Console.WriteLine();
         }
     }
 }
