@@ -1,51 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartParkingApp;
 
 namespace ParkingApp
 {
     class ParkingManager
     {
-        private List ActiveParkingSessions = new List<ParkingSession>();
-        private List CompletedParkingSessions = new List<ParkingSession>();
-        private List Tariff = new List<Tariff>();
+        private List<ParkingSession> ActiveParkingSessions;
+        private List<ParkingSession> CompletedParkingSessions;
+        private List<Tariff> Tariff;
 
         private const int ParkingCapacity = 450;
-        private int FreeLeavePeriod = 15;
+        private int FreeLeavePeriod;
+        
+
+        public ParkingManager()
+        {
+            this.ActiveParkingSessions = new List<ParkingSession>();
+            this.CompletedParkingSessions = new List<ParkingSession>();
+            this.Tariff = new List<Tariff>();
+
+            this.SetTariffData();
+
+            foreach (var t in this.Tariff)
+            {
+                Console.WriteLine(t.Minutes);
+            }
+            
+            this.FreeLeavePeriod = 15;
+        }
 
         /* BASIC PART */
         public ParkingSession EnterParking(string carPlateNumber)
         {
-            if (ParkingManager.ParkingCapacity <= this.ActiveParkingSessions.Length)
-                
-                /* Check that there is a free parking place (by comparing the parking capacity 
-                 * with the number of active parking sessions). If there are no free places, return null
-                 * 
-                 * Also check that there are no existing active sessions with the same car plate number,
-                 * if such session exists, also return null
-                 * 
-                 * Otherwise:
-                 * Create a new Parking session, fill the following properties:
-                 * EntryDt = current date time
-                 * CarPlateNumber = carPlateNumber (from parameter)
-                 * TicketNumber = unused parking ticket number = generate this programmatically
-                 * 
-                 * Add the newly created session to the list of active sessions
-                 * 
+            Console.WriteLine("entering");
+
+            if (ParkingManager.ParkingCapacity <= this.ActiveParkingSessions.Count)
+                return null;
+
+            if (this.ActiveParkingSessions.Find(session => session.CarPlateNumber.Equals(carPlateNumber)) != null)
+                return null;
+
+            ParkingSession newSession = new ParkingSession();
+            newSession.EntryDt = DateTime.Now;
+            newSession.CarPlateNumber = carPlateNumber;
+            newSession.TicketNumber = this.GetNextTicketNumber();
+
+            this.ActiveParkingSessions.Add(newSession);
+
+            return newSession;
+                 /**
                  * Advanced task:
                  * Link the new parking session to an existing user by car plate number (if such user exists)            
                  */
-            throw new NotImplementedException();
         }
 
         public bool TryLeaveParkingWithTicket(int ticketNumber, out ParkingSession session)
         {
+            
             /*
              * Check that the car leaves parking within the free leave period
              * from the PaymentDt (or if there was no payment made, from the EntryDt)
              * 1. If yes:
              *   1.1 Complete the parking session by setting the ExitDt property
-             *   1.2 Move the session from the list of active sessions to the list of past sessions             * 
+             *   1.2 Move the session from the list of active sessions to the list of past sessions
              *   1.3 return true and the completed parking session object in the out parameter
              * 
              * 2. Otherwise, return false, session = null
@@ -108,6 +127,23 @@ namespace ParkingApp
             has to insert the parking ticket and pay at the kiosk)
             */
             throw new NotImplementedException();
+        }
+
+        private int GetNextTicketNumber()
+        {
+            return this.ActiveParkingSessions.Count + this.CompletedParkingSessions.Count + 1;
+        }
+
+        private void SetTariffData()
+        {
+            this.Tariff.Add(new Tariff(15, 0));
+            this.Tariff.Add(new Tariff(60, 50));
+            this.Tariff.Add(new Tariff(120, 100));
+            this.Tariff.Add(new Tariff(180, 200));
+            this.Tariff.Add(new Tariff(240, 400));
+            this.Tariff.Add(new Tariff(300, 800));
+            this.Tariff.Add(new Tariff(450, 1600));
+            this.Tariff.Add(new Tariff(600, 3200));
         }
     }
 }

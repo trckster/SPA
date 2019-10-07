@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Linq;
 namespace ParkingApp
 {
     class Program
@@ -7,7 +7,19 @@ namespace ParkingApp
         static void Main(string[] args)
         {
             ParkingManager app = new ParkingManager();
-            Console.WriteLine();
+
+            if (app.EnterParking("kekheh") == null)
+                Console.WriteLine("fcuk");
+            else
+                Console.WriteLine("oh god");
+            if (app.EnterParking("newkekheh") == null)
+                Console.WriteLine("fcuk");
+            else
+                Console.WriteLine("oh god");
+            if (app.EnterParking("kekheh") == null)
+                Console.WriteLine("fcuk");
+            else
+                Console.WriteLine("oh god");
         }
     }
 }
