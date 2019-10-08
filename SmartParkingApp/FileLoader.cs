@@ -1,7 +1,10 @@
 using System;  
 using System.IO;  
-using System.Runtime.Serialization;  
-using System.Runtime.Serialization.Formatters.Binary;  
+using System.Linq;
+using ParkingApp;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SmartParkingApp
 {
@@ -36,6 +39,14 @@ namespace SmartParkingApp
         public static bool HasSave()
         {
             return File.Exists(FileName);
+        }
+
+        public static List<User> FunnyName()
+        {
+            /** Change IT */
+            List<User> users = new List<User>();
+            users.Add(new User() {Name = "NAME", CarPlateNumber = "simplekek", Phone = "891500"});
+            return users;
         }
     }
 }

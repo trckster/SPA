@@ -1,6 +1,9 @@
-﻿namespace ParkingApp
+﻿using System;
+
+namespace ParkingApp
 {
-    class User
+    [Serializable]
+    public class User
     {
         public string Name { get; set; }
         public string CarPlateNumber { get; set; }

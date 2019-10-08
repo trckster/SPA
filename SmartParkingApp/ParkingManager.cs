@@ -10,23 +10,19 @@ namespace ParkingApp
     {
         private const int ParkingCapacity = 450;
 
-        private List<ParkingSession> ActiveParkingSessions;
-        private List<ParkingSession> CompletedParkingSessions;
-        private List<Tariff> Tariffs;
-        private List<User> Users;
+        private List<ParkingSession> ActiveParkingSessions = new List<ParkingSession>();
+        private List<ParkingSession> CompletedParkingSessions = new List<ParkingSession>();
+        private List<Tariff> Tariffs = new List<Tariff>();
+        private List<User> Users = new List<User>();
 
         private int FreeLeavePeriod;
         
-
         public ParkingManager()
         {
-            this.ActiveParkingSessions = new List<ParkingSession>();
-            this.CompletedParkingSessions = new List<ParkingSession>();
-            this.Tariffs = new List<Tariff>();
-
             this.SetTariffsData();
+            this.LoadUsers();
             
-            this.FreeLeavePeriod = this.Tariffs.First().Minutes;
+            this.FreeLeavePeriod = this.Tariffs.Min(t => t.Minutes);
         }
         
         public ParkingSession EnterParking(string carPlateNumber)
@@ -189,6 +185,12 @@ namespace ParkingApp
         private void Save()
         {
             FileLoader.SaveObject(this);
+        }
+
+        private void LoadUsers()
+        {
+            /** Change it suka */
+            this.Users = FileLoader.FunnyName();
         }
     }
 }
