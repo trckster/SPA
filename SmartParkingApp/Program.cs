@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Linq;
+using SmartParkingApp;
+
 namespace ParkingApp
 {
     class Program
     {
         static void Main(string[] args)
         {
+            ParkingManager app = null;
+            
             if (FileLoader.HasSave())
             {
-                Console.ReadLine("kek");
+                Console.WriteLine("Save file found.");
+                Console.WriteLine("Continue previous session? (enter 'no' for refusal)");
+                string answer = Console.ReadLine();
+                
+                if (!answer.Equals("no"))
+                    app = (ParkingManager) FileLoader.RestoreObject();
             }
-            ParkingManager app = new ParkingMaclassnager();
+
+            if (app == null)
+                app = new ParkingManager();
 
             /** Scenario 1 */
             Console.WriteLine("Scenario 1");

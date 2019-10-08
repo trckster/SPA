@@ -10,23 +10,23 @@ namespace SmartParkingApp
     {
         private const string FileName = "save.txt";
 
-        public void SaveObject(object objectToSave)
+        public static void SaveObject(object objectToSave)
         {
             Stream s;
             BinaryFormatter bf = new BinaryFormatter();
 
-            s = File.Open(FileLoader.FileName, FileMode.Create);
+            s = File.Open(FileName, FileMode.Create);
             bf.Serialize(s, objectToSave);
             s.Close();
         }
 
-        public object RestoreObject()
+        public static object RestoreObject()
         {
             Stream s;
             object obj;
             BinaryFormatter bf = new BinaryFormatter();
 
-            s = File.Open(FileLoader.FileName, FileMode.Open);
+            s = File.Open(FileName, FileMode.Open);
             obj = bf.Deserialize(s);
             s.Close();
             
@@ -35,7 +35,7 @@ namespace SmartParkingApp
 
         public static bool HasSave()
         {
-            return File.Exists(FileLoader.FileName);
+            return File.Exists(FileName);
         }
     }
 }

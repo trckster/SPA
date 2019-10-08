@@ -14,7 +14,6 @@ namespace ParkingApp
         private List<ParkingSession> CompletedParkingSessions;
         private List<Tariff> Tariff;
 
-        private FileLoader fl;
         private int FreeLeavePeriod;
         
 
@@ -27,7 +26,6 @@ namespace ParkingApp
             this.SetTariffData();
             
             this.FreeLeavePeriod = this.Tariff.First().Minutes;
-            this.fl = new FileLoader();
         }
         
         public ParkingSession EnterParking(string carPlateNumber)
@@ -190,7 +188,7 @@ namespace ParkingApp
 
         private void Save()
         {
-            this.fl.SaveObject(this);
+            FileLoader.SaveObject(this);
         }
     }
 }
