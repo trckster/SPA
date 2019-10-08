@@ -12,7 +12,8 @@ namespace ParkingApp
 
         private List<ParkingSession> ActiveParkingSessions;
         private List<ParkingSession> CompletedParkingSessions;
-        private List<Tariff> Tariff;
+        private List<Tariff> Tariffs;
+        private List<User> Users;
 
         private int FreeLeavePeriod;
         
@@ -21,11 +22,11 @@ namespace ParkingApp
         {
             this.ActiveParkingSessions = new List<ParkingSession>();
             this.CompletedParkingSessions = new List<ParkingSession>();
-            this.Tariff = new List<Tariff>();
+            this.Tariffs = new List<Tariff>();
 
-            this.SetTariffData();
+            this.SetTariffsData();
             
-            this.FreeLeavePeriod = this.Tariff.First().Minutes;
+            this.FreeLeavePeriod = this.Tariffs.First().Minutes;
         }
         
         public ParkingSession EnterParking(string carPlateNumber)
@@ -111,8 +112,7 @@ namespace ParkingApp
 
             this.Save();
         }
-
-        /* ADDITIONAL TASK 2 */
+        
         public bool TryLeaveParkingByCarPlateNumber(string carPlateNumber, out ParkingSession session)
         {
             /* There are 3 scenarios for this method:
@@ -153,23 +153,23 @@ namespace ParkingApp
             return this.ActiveParkingSessions.Count + this.CompletedParkingSessions.Count + 1;
         }
 
-        private void SetTariffData()
+        private void SetTariffsData()
         {
-            this.Tariff.Add(new Tariff(15, 0));
-            this.Tariff.Add(new Tariff(60, 50));
-            this.Tariff.Add(new Tariff(120, 100));
-            this.Tariff.Add(new Tariff(180, 200));
-            this.Tariff.Add(new Tariff(240, 400));
-            this.Tariff.Add(new Tariff(300, 800));
-            this.Tariff.Add(new Tariff(450, 1600));
-            this.Tariff.Add(new Tariff(600, 3200));
+            this.Tariffs.Add(new Tariff(15, 0));
+            this.Tariffs.Add(new Tariff(60, 50));
+            this.Tariffs.Add(new Tariff(120, 100));
+            this.Tariffs.Add(new Tariff(180, 200));
+            this.Tariffs.Add(new Tariff(240, 400));
+            this.Tariffs.Add(new Tariff(300, 800));
+            this.Tariffs.Add(new Tariff(450, 1600));
+            this.Tariffs.Add(new Tariff(600, 3200));
         }
 
         private decimal GetPriceByMinutes(double minutes)
         {
             Tariff result = null;
 
-            foreach (var tariff in this.Tariff)
+            foreach (var tariff in this.Tariffs)
             {
                 if (minutes <= tariff.Minutes)
                     if (result == null || tariff.Minutes < result.Minutes)
@@ -178,9 +178,9 @@ namespace ParkingApp
 
             if (result == null)
             {
-                int maxMinutes = this.Tariff.Max(t => t.Minutes);
+                int maxMinutes = this.Tariffs.Max(t => t.Minutes);
                 
-                result = this.Tariff.Find(t => t.Minutes == maxMinutes);
+                result = this.Tariffs.Find(t => t.Minutes == maxMinutes);
             }
 
             return result.Rate;

@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace SmartParkingApp
 {
     [Serializable]
-    public class FileLoader
+    public static class FileLoader
     {
         private const string FileName = "save.txt";
 
