@@ -19,8 +19,8 @@ namespace ParkingApp
         
         public ParkingManager()
         {
-            this.SetTariffsData();
-            this.LoadUsers();
+            this.Tariffs = FileLoader.LoadTariffs();
+            this.Users = FileLoader.LoadUsers();
             
             this.FreeLeavePeriod = this.Tariffs.Min(t => t.Minutes);
         }
@@ -152,18 +152,6 @@ namespace ParkingApp
             return this.ActiveParkingSessions.Count + this.CompletedParkingSessions.Count + 1;
         }
 
-        private void SetTariffsData()
-        {
-            this.Tariffs.Add(new Tariff(15, 0));
-            this.Tariffs.Add(new Tariff(60, 50));
-            this.Tariffs.Add(new Tariff(120, 100));
-            this.Tariffs.Add(new Tariff(180, 200));
-            this.Tariffs.Add(new Tariff(240, 400));
-            this.Tariffs.Add(new Tariff(300, 800));
-            this.Tariffs.Add(new Tariff(450, 1600));
-            this.Tariffs.Add(new Tariff(600, 3200));
-        }
-
         private decimal GetPriceByMinutes(double minutes)
         {
             Tariff result = null;
@@ -189,13 +177,7 @@ namespace ParkingApp
         {
             FileLoader.SaveObject(this);
         }
-
-        private void LoadUsers()
-        {
-            /** Change it suka */
-            this.Users = FileLoader.FunnyName();
-        }
-
+        
         private void CompleteSession(ParkingSession session)
         {
             this.ActiveParkingSessions.Remove(session);
