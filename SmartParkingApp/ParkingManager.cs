@@ -30,7 +30,7 @@ namespace ParkingApp
             if (ParkingManager.ParkingCapacity <= this.ActiveParkingSessions.Count)
                 return null;
 
-            if (this.ActiveParkingSessions.Find(session => session.CarPlateNumber.Equals(carPlateNumber)) != null)
+            if (this.ActiveParkingSessions.Find(session => session.CarPlateNumber == carPlateNumber) != null)
                 return null;
 
             ParkingSession newSession = new ParkingSession();
@@ -107,20 +107,11 @@ namespace ParkingApp
         
         public bool TryLeaveParkingByCarPlateNumber(string carPlateNumber, out ParkingSession session)
         {
-            session = null;
-            
-            foreach (var activeSession in this.ActiveParkingSessions)
-            {
-                if (activeSession.User != null && ((User) activeSession.User).CarPlateNumber == carPlateNumber)
-                {
-                    session = activeSession;
-                    break;
-                }
-            }
+            session = this.ActiveParkingSessions.Find(s => s.CarPlateNumber == carPlateNumber);
 
             if (session == null)
                 return false;
-            
+
             if (session.PaymentDt == null)
             {
                 if (session.EntryDt.AddMinutes(this.FreeLeavePeriod).CompareTo(DateTime.Now) > 0)
