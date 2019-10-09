@@ -119,6 +119,9 @@ namespace ParkingApp
                 else if (session.User != null)
                 {
                     session.PaymentDt = DateTime.Now;
+
+                    if (session.TotalPayment == null)
+                        session.TotalPayment = 0;
                     
                     session.TotalPayment += this.GetPriceByMinutes(DateTime.Now.Subtract(session.EntryDt).TotalMinutes - this.FreeLeavePeriod);
                 }

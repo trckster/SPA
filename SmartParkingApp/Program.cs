@@ -16,9 +16,13 @@ namespace ParkingApp
                 Console.WriteLine("Continue previous session? (enter 'no' for refusal)");
                 string answer = Console.ReadLine();
                 
-                if (!answer.Equals("no"))
+                if (answer != "no")
                     app = (ParkingManager) FileLoader.RestoreObject();
             }
+
+            Console.WriteLine();
+            Console.WriteLine("--------  Test zone --------");
+            Console.WriteLine();
 
             if (app == null)
                 app = new ParkingManager();
@@ -128,21 +132,55 @@ namespace ParkingApp
             app.PayForParking(ps8.TicketNumber, app.GetRemainingCost(ps8.TicketNumber));
             ps8.PaymentDt = ((DateTime) ps8.PaymentDt).AddMinutes(-17);
             Console.WriteLine("Try to leave parking by plate number after payment (must be False): {0}", 
-                app.TryLeaveParkingByCarPlateNumber(carPlates[6], out ps8));
+                app.TryLeaveParkingByCarPlateNumber(carPlates[7], out ps8));
             Console.WriteLine();
             
             /**
-             * Scenario 6
+             * Scenario 9
              *
-             * TryLeaveParkingByCarPlateNumber 1
+             * TryLeaveParkingByCarPlateNumber 3a
              * (The user has not made any payments and leaves parking)
              */
-//            Console.WriteLine("Scenario 6");
-//            ParkingSession ps7 = app.EnterParking(carPlates[5]);
-//            Console.WriteLine("Parking session must be linked with User (must be not null): {0}",
-//                ps7.User == null ? "null" : "not null");
-
-//            Console.WriteLine();
+            Console.WriteLine("Scenario 9");
+            ParkingSession ps9 = app.EnterParking(carPlates[8]);
+            Console.WriteLine("Parking session must be linked with User (must be not null): {0}",
+                ps9.User == null ? "null" : "not null");
+            ps9.EntryDt = ps9.EntryDt.AddMinutes(-199);
+            Console.WriteLine("Can leave parking, payment debited itself (must be True): {0}",
+                app.TryLeaveParkingByCarPlateNumber(carPlates[8], out ps9));
+            Console.WriteLine("Parking session total payment (must be 400): {0}", ps9.TotalPayment);
+            Console.WriteLine();
+            
+            /**
+             * Scenario 10
+             *
+             * TryLeaveParkingByCarPlateNumber 3a IMPORTANT
+             * (The user has not made any payments and leaves parking x2)
+             */
+            Console.WriteLine("Scenario 10");
+            ParkingSession ps10 = app.EnterParking(carPlates[9]);
+            Console.WriteLine("Parking session must be linked with User (must be not null): {0}",
+                ps10.User == null ? "null" : "not null");
+            ps10.EntryDt = ps10.EntryDt.AddMinutes(-65);
+            Console.WriteLine("Can leave parking, payment debited itself (must be True): {0}",
+                app.TryLeaveParkingByCarPlateNumber(carPlates[9], out ps10));
+            Console.WriteLine("Parking session total payment (must be 50): {0}", ps10.TotalPayment);
+            Console.WriteLine();
+            
+            /**
+             * Scenario 11
+             *
+             * TryLeaveParkingByCarPlateNumber 3b
+             * (No connected user, no payments, time's up)
+             */
+            Console.WriteLine("Scenario 11");
+            ParkingSession ps11 = app.EnterParking(carPlates[10]);
+            Console.WriteLine("Parking session must not be linked with User (must be null): {0}",
+                ps11.User == null ? "null" : "not null");
+            ps11.EntryDt = ps11.EntryDt.AddMinutes(-199);
+            Console.WriteLine("Can't leave parking (must be False): {0}",
+                app.TryLeaveParkingByCarPlateNumber(carPlates[10], out ps11));
+            Console.WriteLine();
 
         }
     }
