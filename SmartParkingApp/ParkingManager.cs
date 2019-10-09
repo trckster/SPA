@@ -37,16 +37,13 @@ namespace ParkingApp
             newSession.EntryDt = DateTime.Now;
             newSession.CarPlateNumber = carPlateNumber;
             newSession.TicketNumber = this.GetNextTicketNumber();
+            newSession.User = this.Users.Find(user => user.CarPlateNumber == carPlateNumber);
 
             this.ActiveParkingSessions.Add(newSession);
 
             this.Save();
 
             return newSession;
-                 /**
-                 * Advanced task:
-                 * Link the new parking session to an existing user by car plate number (if such user exists)            
-                 */
         }
         public bool TryLeaveParkingWithTicket(int ticketNumber, out ParkingSession session)
         {
@@ -70,9 +67,8 @@ namespace ParkingApp
             }
 
             session.ExitDt = DateTime.Now;
-            
-            this.ActiveParkingSessions.Remove(session);
-            this.CompletedParkingSessions.Add(session);
+
+            this.CompleteSession(session);
 
             this.Save();
 
@@ -111,37 +107,44 @@ namespace ParkingApp
         
         public bool TryLeaveParkingByCarPlateNumber(string carPlateNumber, out ParkingSession session)
         {
-            /* There are 3 scenarios for this method:
+            session = null;
             
-            1. The user has not made any payments but leaves the parking within the free leave period
-            from EntryDt:
-               1.1 Complete the parking session by setting the ExitDt property
-               1.2 Move the session from the list of active sessions to the list of past sessions             * 
-               1.3 return true and the completed parking session object in the out parameter
+            foreach (var activeSession in this.ActiveParkingSessions)
+            {
+                if (activeSession.User != null && ((User) activeSession.User).CarPlateNumber == carPlateNumber)
+                {
+                    session = activeSession;
+                    break;
+                }
+            }
+
+            if (session == null)
+                return false;
             
-            2. The user has already paid for the parking session (session.PaymentDt != null):
-            Check that the current time is within the free leave period from session.PaymentDt
-               2.1. If yes, complete the session in the same way as in the previous scenario
-               2.2. If no, return false, session = null
+            if (session.PaymentDt == null)
+            {
+                if (session.EntryDt.AddMinutes(this.FreeLeavePeriod).CompareTo(DateTime.Now) > 0)
+                    session.ExitDt = DateTime.Now;
+                else if (session.User != null)
+                {
+                    session.PaymentDt = DateTime.Now;
+                    
+                    session.TotalPayment += this.GetPriceByMinutes(DateTime.Now.Subtract(session.EntryDt).TotalMinutes - this.FreeLeavePeriod);
+                }
+                else
+                    session = null;
+            }
+            else if (((DateTime)session.PaymentDt).AddMinutes(this.FreeLeavePeriod).CompareTo(DateTime.Now) < 0)
+                session = null;
 
-            3. The user has not paid for the parking session:            
-            3a) If the session has a connected user (see advanced task from the EnterParking method):
-            ExitDt = PaymentDt = current date time; 
-            TotalPayment according to the tariff table:            
-            
-            IMPORTANT: before calculating the parking charge, subtract FreeLeavePeriod 
-            from the total number of minutes passed since entry
-            i.e. if the registered visitor enters the parking at 10:05
-            and attempts to leave at 10:25, no charge should be made, otherwise it would be unfair
-            to loyal customers, because an ordinary printed ticket could be inserted in the payment
-            kiosk at 10:15 (no charge) and another 15 free minutes would be given (up to 10:30)
+            if (session == null)
+                return false;
 
-            return the completed session in the out parameter and true in the main return value
+            session.ExitDt = DateTime.Now;
 
-            3b) If there is no connected user, set session = null, return false (the visitor
-            has to insert the parking ticket and pay at the kiosk)
-            */
-            throw new NotImplementedException();
+            this.CompleteSession(session);
+
+            return true;
         }
 
         private int GetNextTicketNumber()
@@ -191,6 +194,12 @@ namespace ParkingApp
         {
             /** Change it suka */
             this.Users = FileLoader.FunnyName();
+        }
+
+        private void CompleteSession(ParkingSession session)
+        {
+            this.ActiveParkingSessions.Remove(session);
+            this.CompletedParkingSessions.Add(session);
         }
     }
 }

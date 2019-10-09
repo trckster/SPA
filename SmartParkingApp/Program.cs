@@ -28,7 +28,7 @@ namespace ParkingApp
             ParkingSession ps = app.EnterParking("scenario1");
             ps.EntryDt = ps.EntryDt.AddHours(-1);
             Console.WriteLine("Remaining cost (must be 100): {0}", app.GetRemainingCost(ps.TicketNumber));
-            app.PayForParking(ps.TicketNumber, 100);
+            app.PayForParking(ps.TicketNumber, app.GetRemainingCost(ps.TicketNumber));
             Console.WriteLine("Try to leave parking (must be True): {0}", app.TryLeaveParkingWithTicket(ps.TicketNumber, out ps));
             Console.WriteLine();
             
@@ -45,14 +45,15 @@ namespace ParkingApp
             ParkingSession ps3 = app.EnterParking("scenario3");
             ps3.EntryDt = ps3.EntryDt.AddHours(-1);
             Console.WriteLine("Remaining cost (must be 100): {0}", app.GetRemainingCost(ps3.TicketNumber));
-            app.PayForParking(ps3.TicketNumber, 100);
+            app.PayForParking(ps3.TicketNumber, app.GetRemainingCost(ps3.TicketNumber));
             DateTime newPaymentDt = (DateTime) ps3.PaymentDt;
             ps3.PaymentDt = newPaymentDt.AddMinutes(-30);
             Console.WriteLine("Try to leave parking (must be False): {0}", app.TryLeaveParkingWithTicket(ps3.TicketNumber, out ps));
             Console.WriteLine("Remaining cost (must be 50): {0}", app.GetRemainingCost(ps3.TicketNumber));
-            app.PayForParking(ps3.TicketNumber, 50);
+            app.PayForParking(ps3.TicketNumber, app.GetRemainingCost(ps3.TicketNumber));
             Console.WriteLine("Try to leave parking (must be True): {0}", app.TryLeaveParkingWithTicket(ps3.TicketNumber, out ps));
             Console.WriteLine();
+            /** Scenario 4 */
         }
     }
 }

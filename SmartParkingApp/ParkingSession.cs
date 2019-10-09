@@ -17,5 +17,7 @@ namespace ParkingApp
         public string CarPlateNumber { get; set; }
         // Issued printed ticket
         public int TicketNumber { get; set; }
+		// User
+		public User User { get; set; }
     }
 }
